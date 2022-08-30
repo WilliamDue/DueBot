@@ -19,7 +19,7 @@ class FFmpegPCMAudio(discord.AudioSource):
         
         args.append('-i')
         args.append('-' if pipe else source)
-        args.extend(('-f', 's16le', '-ar', '48000', '-ac', '2', '-loglevel', 'warning'))
+        args.extend(('-hide_banner', '-f', 's16le', '-ar', '48000', '-ac', '2', '-loglevel', 'error'))
         
         if isinstance(options, str):
             args.extend(shlex.split(options))
@@ -28,10 +28,12 @@ class FFmpegPCMAudio(discord.AudioSource):
         
         self._process = None
         try:
-            self._process = subprocess.Popen(args,
-                                             stdin=subprocess.PIPE,
-                                             stdout=subprocess.PIPE,
-                                             stderr=stderr)
+            self._process = subprocess.Popen(
+                args,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=stderr
+            )
             self._stdout = io.BytesIO(
                 self._process.communicate(input=stdin)[0]
             )

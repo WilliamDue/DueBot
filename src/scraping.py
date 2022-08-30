@@ -1,4 +1,4 @@
-import urllib.request
+from urllib.request import urlopen, HTTPError
 from bs4 import BeautifulSoup
 
 
@@ -18,14 +18,12 @@ def get_literotica_text(link: str) -> str:
     while True:
         
         try:
-            fp = urllib.request.urlopen(link + f'?page={n}')
-        except urllib.error.HTTPError:
+            fp = urlopen(link + f'?page={n}')
+        except HTTPError:
             break
         
-        page_bytes = fp.read()
+        soup = BeautifulSoup(fp.read(), 'html.parser')
         fp.close()
-        
-        soup = BeautifulSoup(page_bytes, 'html.parser')
         s = soup.find("div", {"class": "panel article aa_eQ"})
         blob += ' '.join([p.get_text() for p in s.find_all("p")]) + ' '
         
