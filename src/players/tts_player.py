@@ -4,20 +4,17 @@ from discord.voice_client import VoiceClient
 from io import BufferedReader, BytesIO
 from mute import Mute
 from .abstract_player import Player
-from .item import Item
 import nltk.data
-
+from discord.ext.commands.context import Context
 
 
 class TTSPlayer(Player):
 
-    def __init__(
-            self,
-            voice_client: VoiceClient,
-            model_name='tts_models/en/ljspeech/tacotron2-DDC_ph',
-            vocoder_name='vocoder_models/en/ljspeech/multiband-melgan'
-        ) -> None:
+    def __init__(self, text: str, context: Context) -> None:
+        super().__init__(text, context)
 
+        model_name='tts_models/en/ljspeech/tacotron2-DDC_ph'
+        vocoder_name='vocoder_models/en/ljspeech/multiband-melgan'
         with Mute():
             manager = ModelManager()
             tts_checkpoint, tts_config_path, _ = manager.download_model(model_name)
@@ -32,7 +29,6 @@ class TTSPlayer(Player):
         
         tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
         self._split = lambda text: tokenizer.tokenize(text)
-        super().__init__(voice_client)
 
 
     def _tts(self, sentence: str) -> BytesIO:
@@ -45,8 +41,8 @@ class TTSPlayer(Player):
             except:
                 return None
         
-        return BufferedReader(fp).detach()
+        return fp
 
 
-    async def play(self, item: Item) -> None:
-        await self.lazy_play_wait(self._tts, [item.text])
+    async def play(self, voice_client: VoiceClient) -> None:
+        await self.lazy_play_wait(voice_client, self._tts, [self.text])

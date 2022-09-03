@@ -1,9 +1,8 @@
 from discord.voice_client import VoiceClient
 from discord.ext.commands.context import Context
 from typing import Dict
-
-from players.player_type import PlayerType
-from .queue import VoiceClientQueue, Item
+from players import Player
+from .queue import VoiceClientQueue
 
 
 class VoiceClientManager:
@@ -66,12 +65,12 @@ class VoiceClientManager:
         return queue
     
 
-    async def try_push(self, player_type: PlayerType, item: Item) -> None:
-        queue = await self.get(item.context)
+    async def try_push(self, player: Player) -> None:
+        queue = await self.get(player.context)
 
         can_play = queue is not None
         if can_play:
-            await queue.push(player_type, item)
+            await queue.push(player)
         
         return can_play
     

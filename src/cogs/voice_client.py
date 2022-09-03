@@ -2,10 +2,10 @@ from discord.ext.commands import Bot, Cog, command, group
 from discord.ext.commands.context import Context
 from discord.member import Member, VoiceState
 from discord.utils import get
-from voice_client import VoiceClientManager, Item
-from players import PlayerType
+from voice_client import VoiceClientManager
 from discord import ButtonStyle, Interaction
 from discord.ui import View, Button, button
+from players import TTSPlayer, LiteroticaPlayer, FilePlayer, YouTubePlayer
 
 
 class QueueView(View):
@@ -83,38 +83,38 @@ class VoiceClientCog(Cog, name='Voice Channel Commands'):
 
     @play.command(pass_context=True, help='Plays text via TTS.')
     async def tts(self, context: Context, *, text: str) -> None:
-        item = Item(
+        player = TTSPlayer(
             text=text,
             context=context
         )
-        await self.manager.try_push(PlayerType.TTS, item)
+        await self.manager.try_push(player)
 
 
     @play.command(pass_context=True, aliases=['le'], help='Plays literotica stories via TTS.')
     async def literotica(self, context: Context, *, text: str) -> None:
-        item = Item(
+        player = LiteroticaPlayer(
             text=text,
             context=context
         )
-        await self.manager.try_push(PlayerType.Literotica, item)
+        await self.manager.try_push(player)
 
 
     @play.command(name='bruh', aliases=['david'], help='Says bruh.')
     async def bruh(self, context: Context) -> None:
-        item = Item(
+        player = FilePlayer(
             text='./bruh.mp4',
             context=context
         )
-        await self.manager.try_push(PlayerType.File, item)
+        await self.manager.try_push(player)
     
 
     @play.command(name='youtube', aliases=['yt'], help='Plays youtube.')
-    async def bruh(self, context: Context, *, text: str) -> None:
-        item = Item(
+    async def youtube(self, context: Context, *, text: str) -> None:
+        player = YouTubePlayer(
             text=text,
             context=context
         )
-        await self.manager.try_push(PlayerType.YouTube, item)
+        await self.manager.try_push(player)
 
 
     @command(name='kill', aliases=['leave', 'k'], help="Stops bot in voice channels.")

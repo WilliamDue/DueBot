@@ -3,12 +3,13 @@ from urllib.request import urlopen, HTTPError
 from discord.voice_client import VoiceClient
 from bs4 import BeautifulSoup
 from .tts_player import TTSPlayer
-from .item import Item
+from discord.ext.commands.context import Context
+
 
 class LiteroticaPlayer(TTSPlayer):
 
-    def __init__(self, voice_client: VoiceClient) -> None:
-        super().__init__(voice_client)
+    def __init__(self, text: str, context: Context) -> None:
+        super().__init__(text, context)
 
 
     def get_literotica_text(self, link: str) -> Tuple[str, str]:
@@ -47,6 +48,6 @@ class LiteroticaPlayer(TTSPlayer):
         return blob, description
 
 
-    async def play(self, item: Item) -> None:
-        text, description = self.get_literotica_text(item.text)
-        await self.lazy_play_wait(self._tts, text)
+    async def play(self, voice_client: VoiceClient) -> None:
+        text, description = self.get_literotica_text(self.text)
+        await self.lazy_play_wait(voice_client, self._tts, text)

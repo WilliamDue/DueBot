@@ -1,1 +1,1 @@
-from .manager import VoiceClientManager, Item
+from .manager import VoiceClientManager
